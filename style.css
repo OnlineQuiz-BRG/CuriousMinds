@@ -302,3 +302,21 @@ form button:hover {
         padding: 30px 20px;
     }
 }
+body {
+    background: url("hero-bg.jpg") no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Ensure the form-details has enough height/width to show the image */
+.form-box .form-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    text-align: center;
+    padding: 0 40px;
+    /* The background is now handled in the HTML inline style */
+}
