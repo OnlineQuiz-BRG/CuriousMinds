@@ -27,13 +27,12 @@ header {
 
 .navbar {
     display: flex;
-    padding: 22px 0;
+    padding: 15px 0; /* Adjust these values to increase/decrease overall nav height */
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
     justify-content: space-between;
 }
-
 .navbar .hamburger-btn {
     display: none;
     color: #fff;
@@ -48,17 +47,17 @@ header {
     text-decoration: none;
 }
 .navbar .logo img {
-    width: 60px; /* Increase this value (e.g., 60px, 80px, or 100px) */
-    height: auto; /* Maintains the image proportions */
-    border-radius: 50%; /* Keeps the circular shape */
+    width: 60px; /* Increased from 40px */
+    height: auto; 
+    border-radius: 50%;
+    object-fit: cover; /* Ensures the logo stays centered in the circle */
 }
-
 .navbar .logo h2 {
     color: #fff;
     font-weight: 600;
-    font-size: 1.7rem;
+    font-size: 2.2rem; /* Increased from 1.7rem */
+    margin-left: 5px; /* Adds a bit of breathing room between img and text */
 }
-
 .navbar .links {
     display: flex;
     gap: 35px;
