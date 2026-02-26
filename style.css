@@ -41,19 +41,36 @@ header {
     cursor: pointer;
     font-size: 1.5rem;
 }
+/* Styling for the logo image to make it larger */
+.navbar .logo img {
+    width: 60px; /* Increased from 40px */
+    height: auto; 
+    border-radius: 50%;
+    object-fit: cover; /* Ensures the logo stays centered in the circle */
+     margin-right: 15px; /* Space between logo and text */
+}
 
+/* Styling the brand text for maximum impact */
+.navbar .logo h2.brand-text {
+    color: #fff; /* "Welcome to" stays white */
+    font-size: 2.5rem; /* Large, clear text */
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+}
+
+/* Applying the Saffron color specifically to the brand name */
+.saffron-text {
+    color: #FF9933; /* Official Saffron Hex code */
+    margin-left: 8px; /* Slight gap after "Welcome to" */
+}
 .navbar .logo {
     gap: 10px;
     display: flex;
     align-items: center;
     text-decoration: none;
 }
-.navbar .logo img {
-    width: 60px; /* Increased from 40px */
-    height: auto; 
-    border-radius: 50%;
-    object-fit: cover; /* Ensures the logo stays centered in the circle */
-}
+
 .navbar .logo h2 {
     color: #fff;
     font-weight: 600;
