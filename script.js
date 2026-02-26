@@ -1,6 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Replace the URL below with your deployed Google Apps Script Web App URL
+    // This is the URL of your BACKEND script (the one that talks to the Google Sheet)
     const scriptURL = 'https://script.google.com/macros/s/AKfycbx5WGDoadCmC-tIWAUi7DgDbiWZYIbpu9ZxvVI1l7vA4iwaLGV1BCdca1yFgTfsKwho_w/exec';
+    
+    // This is the URL where you want to send the user AFTER a successful login
+    const redirectURL = 'https://script.google.com/macros/s/AKfycbyYxMvKzPGR_yIzrWBLHR9kGMF47zXerKe-tPUQ072cvbCqna9qE9En2MPUgO44uxTT1A/exec';
 
     const navbarMenu = document.querySelector(".navbar .links");
     const hamburgerBtn = document.querySelector(".hamburger-btn");
@@ -43,23 +46,27 @@ document.addEventListener("DOMContentLoaded", () => {
         loginForm.addEventListener("submit", (e) => {
             e.preventDefault();
             const submitBtn = loginForm.querySelector("button");
-            submitBtn.innerText = "Processing...";
+            submitBtn.innerText = "Verifying...";
             submitBtn.disabled = true;
 
             const formData = new FormData(loginForm);
-            // Match these names to your HTML input names
             formData.append("action", "login");
 
             fetch(scriptURL, { method: 'POST', body: formData })
                 .then(res => res.text())
                 .then(data => {
-                    alert(data);
-                    submitBtn.innerText = "Log In";
-                    submitBtn.disabled = false;
-                    if (data.includes("successful")) document.body.classList.remove("show-popup");
+                    // Check if the response from GAS contains the word "successful"
+                    if (data.toLowerCase().includes("successful")) {
+                        window.location.href = redirectURL;
+                    } else {
+                        alert(data); // Shows "Invalid email or password" or other errors
+                        submitBtn.innerText = "Log In";
+                        submitBtn.disabled = false;
+                    }
                 })
                 .catch(error => {
                     console.error('Error!', error.message);
+                    alert("An error occurred. Please try again.");
                     submitBtn.innerText = "Log In";
                     submitBtn.disabled = false;
                 });
@@ -84,7 +91,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     alert(data);
                     submitBtn.innerText = "Sign Up";
                     submitBtn.disabled = false;
-                    if (data.includes("successfully")) formPopup.classList.remove("show-signup");
+                    // If successful, switch the user back to the login view
+                    if (data.toLowerCase().includes("successfully")) {
+                        formPopup.classList.remove("show-signup");
+                    }
                 })
                 .catch(error => {
                     console.error('Error!', error.message);
