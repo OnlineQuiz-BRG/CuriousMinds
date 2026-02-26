@@ -47,10 +47,10 @@ header {
     align-items: center;
     text-decoration: none;
 }
-
 .navbar .logo img {
-    width: 40px;
-    border-radius: 50%;
+    width: 60px; /* Increase this value (e.g., 60px, 80px, or 100px) */
+    height: auto; /* Maintains the image proportions */
+    border-radius: 50%; /* Keeps the circular shape */
 }
 
 .navbar .logo h2 {
