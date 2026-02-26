@@ -12,7 +12,7 @@ body {
     min-height: 100vh;
     width: 100%;
     /* Unified background rule - Ensure "Images" matches your folder name exactly */
-    background: url("Images/hero-bg.jpg") no-repeat center center fixed;
+    background: url("Images/hero-bg1.jpg") no-repeat center center fixed;
     background-size: cover;
 }
 
