@@ -337,13 +337,15 @@ form button:hover {
     position: absolute;
     top: 100%;
     left: 0;
-    background: #fff;
+    /* Force a solid white background */
+    background-color: #ffffff !important; 
     min-width: 160px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
     border-radius: 5px;
     padding: 10px 0;
     list-style: none;
     z-index: 1000;
+    border: 1px solid #e0e0e0;
 }
 
 /* This class will be added/removed by JS */
@@ -352,13 +354,27 @@ form button:hover {
 }
 
 .dropdown-menu li a {
-    color: #333;
+    /* Force dark text color so it's visible on white background */
+    color: #333333 !important; 
     padding: 12px 20px;
     display: block;
     font-size: 0.95rem;
-    transition: background 0.3s;
+    text-decoration: none;
+    transition: background 0.3s, color 0.3s;
 }
 
 .dropdown-menu li a:hover {
-    background-color: #f5f5f5;
+    background-color: #f5f5f5 !important;
+    color: #000000 !important;
+}
+
+/* Optional: Add a small pointer triangle at the top */
+.dropdown-menu::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    border-width: 0 10px 10px 10px;
+    border-style: solid;
+    border-color: transparent transparent #ffffff transparent;
 }
