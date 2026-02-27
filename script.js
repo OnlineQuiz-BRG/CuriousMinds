@@ -38,6 +38,28 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // --- COURSES DROPDOWN LOGIC ---
+
+    const dropdownToggle = document.querySelector(".dropdown-toggle");
+    const dropdownMenu = document.querySelector(".dropdown-menu");
+
+    if (dropdownToggle && dropdownMenu) {
+        dropdownToggle.addEventListener("click", (e) => {
+            e.preventDefault(); 
+            e.stopPropagation(); // Prevents the window click listener from immediately closing it
+            dropdownMenu.classList.toggle("show");
+        });
+    }
+
+    // Close dropdown if user clicks anywhere else on the page
+    window.addEventListener("click", (e) => {
+        if (dropdownMenu && dropdownMenu.classList.contains('show')) {
+            if (!e.target.closest('.dropdown')) {
+                dropdownMenu.classList.remove('show');
+            }
+        }
+    });
+
     // --- GOOGLE SHEETS FORM HANDLING ---
 
     // Login Form Handler
@@ -55,11 +77,10 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch(scriptURL, { method: 'POST', body: formData })
                 .then(res => res.text())
                 .then(data => {
-                    // Check if the response from GAS contains the word "successful"
                     if (data.toLowerCase().includes("successful")) {
                         window.location.href = redirectURL;
                     } else {
-                        alert(data); // Shows "Invalid email or password" or other errors
+                        alert(data);
                         submitBtn.innerText = "Log In";
                         submitBtn.disabled = false;
                     }
@@ -91,7 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     alert(data);
                     submitBtn.innerText = "Sign Up";
                     submitBtn.disabled = false;
-                    // If successful, switch the user back to the login view
                     if (data.toLowerCase().includes("successfully")) {
                         formPopup.classList.remove("show-signup");
                     }
