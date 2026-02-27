@@ -326,3 +326,39 @@ form button:hover {
         width: 95%;
     }
 }
+/* Ensure the parent is relative */
+.navbar .links .dropdown {
+    position: relative;
+}
+
+/* Base state for dropdown menu */
+.dropdown-menu {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    border-radius: 5px;
+    padding: 10px 0;
+    list-style: none;
+    z-index: 1000;
+}
+
+/* This class will be added/removed by JS */
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-menu li a {
+    color: #333;
+    padding: 12px 20px;
+    display: block;
+    font-size: 0.95rem;
+    transition: background 0.3s;
+}
+
+.dropdown-menu li a:hover {
+    background-color: #f5f5f5;
+}
