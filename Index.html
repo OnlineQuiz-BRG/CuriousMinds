@@ -7,114 +7,42 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0">
     <link rel="stylesheet" href="Style.css">
     <script src="Script.js" defer></script>
+    <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
 </head>
 <body>
     <header>
-        <nav class="navbar">
-            <span class="hamburger-btn material-symbols-rounded">menu</span>
-            <a href="#" class="logo">
-                <img src="Images/logo.jpg" alt="logo">
-                <h2 class="brand-text"><span class="brand-color">CuriousMinds</span></h2>
-            </a>
-     
-            <ul class="links">
-                <span class="close-btn material-symbols-rounded">close</span>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Resources</a></li>
-               <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropdown-toggle">
-                    Courses <span class="material-symbols-rounded">arrow_drop_down</span>
-                    </a>
-                <ul class="dropdown-menu">
-                    <li><a href="#">Maths</a></li>
-                    <li><a href="#">Science</a></li>
-                    <li><a href="#">Telugu</a></li>
-                </ul>
-                </li>
-                <li><a href="#">About us</a></li>
-                <li><a href="#">Contact us</a></li>
-            </ul>
-            <button class="login-btn">LOG IN</button>
-        </nav>
-        <div class="user-auth">
-            <button type="button" class="login-btn-modal">Login</button>
-            
-        </div>
+            <a href="#" class="CuriousMinds">CuriousMinds</a>
+            <nav>
+                <a href="#">Home</a>
+                <a href="#">About</a>
+                <a href="#">Courses</a>
+                <a href="#">Contact</a>  
+            </nav>
+            <div class="user-auth">
+                <button type="button" class="login-btn-modal">Login</button>    
+                <i class="bxf bx-envelope" />
+            </div>
     </header>
     <section>
         <h1>Hey Developer!</h1>
     </section>
     <div class="auth-modal">
         <div class="form-box login">
-            <h2>LOGIN</h2>
-                <form action="#">
-                   <div class="input-box">
-                        <input type="email" name="email" placeholder="Email" required>
-    <div class="blur-bg-overlay"></div>
-
-    <div class="form-popup">
-        <span class="close-btn material-symbols-rounded">close</span>
-        
-        <div class="form-box login">
-            <div class="form-details" style="background: url('Images/login-img.jpg') no-repeat center center / cover;">
-                <h2>Welcome to <b class="brand-color">CuriousMinds</b></h2>
-                <p>Please log in using your personal information to stay connected with us.</p>
-            </div>
-            <div class="form-content">
-                <h2>LOGIN</h2>
-                <form action="#">
-                   <div class="input-field">
-                        <input type="text" name="email" required>
-                        <label>email</label>
-                    </div>
-                    <div class="input-field">
-                        <input type="password" name="password" required>
-                        <label>Password</label>
-                    </div>
-                    <a href="#" class="forgot-pass-link">Forgot password?</a>
-                    <button type="submit">Log In</button>
-                </form>
-                <div class="bottom-link">
-                    Don't have an account?
-                    <a href="#" id="signup-link">Signup</a>
+            <h2>Login</h2>
+            <form action="">
+                <div class="input-box">
+                    <input type="email" name="email" placeholder="Email" required>
+                    <i class='bx bxs-envelope'></i>
                 </div>
-            </div>
-        </div>
 
-        <div class="form-box signup">
-            <div class="form-details" style="background: url('Images/signup-img.jpg') no-repeat center center / cover;">
-                <h2>Create Account</h2>
-                <p>To become a part of <b class="brand-color">CuriousMinds</b>, please sign up using your personal information.</p>
-            </div>
-            <div class="form-content">
-                <h2>SIGNUP</h2>
-                <form action="#">
-                    <div class="input-field">
-                        <input type="text" name="name" required>
-                        <label>Name</label>
-                    </div>
-                    <div class="input-field">
-                        <input type="text" name="email" required>
-                        <label>Enter your email</label>
-                    </div>
-                    <div class="input-field">
-                        <input type="password" name="password" required>
-                        <label>Create password</label>
-                    </div>
-                    <div class="policy-text">
-                        <input type="checkbox" id="policy">
-                        <label for="policy">
-                            I agree the
-                            <a href="#" class="option">Terms & Conditions</a>
-                        </label>
-                    </div>
-                    <button type="submit">Sign Up</button>
-                </form>
-                <div class="bottom-link">
-                    Already have an account? 
-                    <a href="#" id="login-link">Login</a>
+                <div class="input-box">
+                    <input type="password" name="password" placeholder="Password" required>
+                    <i class='bx bxs-lock-alt'></i>
                 </div>
-            </div>
+
+                <button type="submit" name="login-btn" class="btn">Login</button>
+                <p Don't have an account? <a href="#" class="register-link">Register</a></p>
+            </form>
         </div>
     </div>
 </body>
