@@ -64,5 +64,172 @@ section h1 {
     color: #fff;
     font-weight: 600;
 }
+.auth-modal {
+    /* Set position to fixed to keep it in place regardless of scrolling */
+    position: fixed;
+    
+    /* Dimensions of the modal */
+    width: 420px;
+    height: 440px;
+    
+    /* Translucent background for the glass effect */
+    background: rgba(0, 0, 0, .3);
+    
+    /* Light border to define the edges in a dark/glass theme */
+    border: 2px solid rgba(255, 255, 255, .3);
+    border-radius: 20px;
+    
+    /* Subtle outer shadow for depth */
+    box-shadow: 0 0 30px rgba(0, 0, 0, .3);
+    
+    /* The key glassmorphism property: blurs the content behind the modal */
+    backdrop-filter: blur(20px);
+    
+    /* Text color set to white */
+    color: #fff;
+    
+    /* Centering technique using inset: 0 and margin: auto */
+    inset: 0;
+    margin: auto;
+    
+    /* Layout properties to center internal content */
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    transform: scale(0);
+    transition: height .2s ease, transform .5s ease;
+}
 
+.auth-modal.show {
+    transform: scale(1);
+}
 
+.auth-modal.slide {
+    height: 520px;
+}
+.auth-modal .form-box {
+    width: 100%;
+    padding: 40px;
+}
+
+.auth-modal .form-box.login,
+.auth-modal.slide .form-box.register {
+    transform: translateX(0);
+    transition: transform .18s ease;
+}
+
+.auth-modal.slide .form-box.login {
+    transform: translateX(-400px);
+    transition: none;
+}
+
+.auth-modal .form-box.register {
+    position: absolute;
+    transform: translateX(400px);
+}
+.form-box h2 {
+    font-size: 35px;
+    text-aling: center;
+}
+/* Wrapper for each input field and its icon */
+.input-box {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin: 30px 0;
+}
+
+/* Styling for the actual input element */
+.input-box input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, .3);
+    outline: none;
+    border-radius: 40px;
+    font-size: 16px;
+    color: #fff;
+    /* Padding: top, right (space for icon), bottom, left */
+    padding: 20px 45px 20px 20px; 
+}
+
+/* Styling for the placeholder text inside the inputs */
+.input-box input::placeholder {
+    color: #fff;
+}
+
+/* Styling for the icons (e.g., envelope or lock) inside the input box */
+.input-box i {
+    /* Positions the icon on the right side of the input field */
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    
+    /* Perfectly centers the icon vertically regardless of font size */
+    transform: translateY(-50%);
+    font-size: 20px;
+}
+/* ==========================================================================
+   BUTTON STYLES
+   Features: High-contrast solid button with soft shadow.
+   ========================================================================== 
+*/
+
+.btn {
+    width: 100%;
+    height: 45px;
+    
+    /* Solid white background to stand out against the glass background */
+    background: #fff;
+    border-radius: 40px;
+    border: none;
+    
+    /* Light shadow for a slightly lifted effect */
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    
+    font-size: 16px;
+    color: #222; /* Darker text for readability on white background */
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.form-box p {
+    font-size: 14.5px;
+    text-align: center;
+    margin: 24px 0 10 px;
+}
+.form-box p a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+}
+.form-box p a:hover{
+   text-decoration: underline;
+}
+
+/* Styling for the close button located inside the authentication modal */
+.auth-modal .close-btn-modal {
+    /* Absolute positioning to place it relative to the .auth-modal container */
+    position: absolute;
+    top: 0;
+    right: 0;
+    
+    /* Square dimensions for the button */
+    width: 45px;
+    height: 45px;
+    
+    /* Solid white background to stand out against the glass modal */
+    background: #fff;
+    border: none;
+    
+    /* Rounds only the bottom-left corner to create a notched effect */
+    border-bottom-left-radius: 20px;
+    
+    /* Icon/Text styling */
+    font-size: 35px;
+    color: #222;
+    cursor: pointer;
+    
+    /* Ensures the button stays on top of all other internal elements */
+    z-index: 1;
+}
