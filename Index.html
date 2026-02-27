@@ -6,7 +6,6 @@
     <title>CuriousMinds | Login & Registration</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0">
     <link rel="stylesheet" href="Style.css">
-    <script src="Script.js" defer></script>
     <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
 </head>
 <body>
@@ -19,7 +18,13 @@
                 <a href="#">Contact</a>  
             </nav>
             <div class="user-auth">
-                <button type="button" class="login-btn-modal">Login</button>    
+                <div class="profile-box">
+                    <div class="avatar-circle">C</div>
+                    <div class="dropdown">
+                        <a href="#">My Account</a>
+                        <a href="#">Logout</a>
+                    </div>
+                <button type="button" class="login-btn-modal" style="display: none;">Login</button>    
                 <i class="bxf bx-envelope" />
             </div>
     </header>
@@ -27,6 +32,8 @@
         <h1>Hey Developer!</h1>
     </section>
     <div class="auth-modal">
+         <button type="button" class="close-btn-modal"><i cclass='bx bx-x'></i></button>
+        
         <div class="form-box login">
             <h2>Login</h2>
             <form action="">
@@ -44,6 +51,31 @@
                 <p Don't have an account? <a href="#" class="register-link">Register</a></p>
             </form>
         </div>
+
+    <div class="form-box register">
+        <h2>Register</h2>
+        <form action="">
+            <div class="input-box">
+                <input type="text" name="name" placeholder="Name" required>
+                <i class='bx bxs-user'></i>
+            </div>
+
+            <div class="input-box">
+                <input type="email" name="email" placeholder="Email" required>
+                <i class='bx bxs-envelope'></i>
+            </div>
+
+            <div class="input-box">
+                <input type="password" name="password" placeholder="Password" required>
+                <i class='bx bxs-lock'></i>
+            </div>
+
+            <button type="submit" name="register_btn" class="btn">Register</button>
+                <p>Already have an account? <a href="#"class ="login-link">Login</a></p>
+            </div>
+        </form>
     </div>
+</div>
+    <script src="Script.js"></script>
 </body>
 </html>
