@@ -8,26 +8,57 @@ const profileBox = document.querySelector('.profile-box');
 const avatarCircle = document.querySelector('.avatar-circle');
 const alertBox = document.querySelector('.alert-box');
 
-/* When Register is clicked, add the 'slide' class to shift the forms */
+/* 1. Toggle between Login and Register forms */
 registerLink.addEventListener('click', (e) => {
-    e.preventDefault(); // Prevent default link behavior
+    e.preventDefault(); // Prevent default anchor behavior
     authModal.classList.add('slide');
 });
 
-/* When Login is clicked, remove the 'slide' class to shift back */
 loginLink.addEventListener('click', (e) => {
-    e.preventDefault(); // Prevent default link behavior
+    e.preventDefault(); 
     authModal.classList.remove('slide');
 });
 
-loginBtnModal.addEventListener('click',()=> authModal.classlist.add('show'));
-closeBtnModal.addEventListener('click',()=> authModal.classlist.remove('show','slide'));
+/* 2. Open and Close the Auth Modal */
+// Fixed: Changed 'classlist' to 'classList'
+loginBtnModal.addEventListener('click', () => {
+    authModal.classList.add('show');
+});
 
-avatarCircle.addEventListener('click',()=> profileBox.classlist.toggle('show'));
+closeBtnModal.addEventListener('click', () => {
+    authModal.classList.remove('show', 'slide');
+});
 
-setTimeout(() => alertBox.classlist.add('show'),50);
+/* 3. Profile Dropdown Toggle */
+// Fixed: Changed 'classlist' to 'classList'
+avatarCircle.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevents clicks from immediately closing the menu
+    profileBox.classList.toggle('show');
+});
 
-setTimeout(() => {
-    alertBox.classlist.remove('show');
-    setTimeout(() => alertBox.remove(), 1000);
-}, 6000);
+/* 4. Alert Box Logic */
+// Fixed: Added check to ensure alertBox exists before running
+if (alertBox) {
+    // Show the alert slightly after page load
+    setTimeout(() => {
+        alertBox.classList.add('show');
+    }, 500);
+
+    // Hide and remove the alert after 6 seconds
+    setTimeout(() => {
+        alertBox.classList.remove('show');
+        
+        // Wait for the slide-out animation to finish before removing from DOM
+        setTimeout(() => {
+            alertBox.remove();
+        }, 1000);
+    }, 6000);
+}
+
+/* 5. Click outside to close (Optional but recommended) */
+window.addEventListener('click', (e) => {
+    // Close profile dropdown if clicking outside
+    if (profileBox && !profileBox.contains(e.target)) {
+        profileBox.classList.remove('show');
+    }
+});
