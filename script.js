@@ -8,6 +8,8 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbxlb4eUwslxEPAk3DiNLsAH
 const REDIRECT_URL = 'https://script.google.com/macros/s/AKfycbyYxMvKzPGR_yIzrWBLHR9kGMF47zXerKe-tPUQ072cvbCqna9qE9En2MPUgO44uxTT1A/exec';
 
 document.addEventListener('click', (e) => {
+    if (e.target.id === 'menu-icon') document.querySelector('#navbar').classList.toggle('active');
+    if (e.target.classList.contains('nav-link')) window.location.href = `${REDIRECT_URL}?content=${e.target.dataset.page}`;
     if (e.target.closest('.register-link')) authModal.classList.add('slide'), authModal.classList.remove('reset-mode');
     if (e.target.closest('.login-link')) authModal.classList.remove('slide', 'reset-mode');
     if (e.target.closest('.forgot-link')) authModal.classList.add('reset-mode'), authModal.classList.remove('slide');
@@ -18,14 +20,17 @@ closeBtnModal.addEventListener('click', () => authModal.classList.remove('show',
 avatarCircle.addEventListener('click', (e) => (e.stopPropagation(), profileBox.classList.toggle('show')));
 
 const handleForm = async (id, action) => {
-    document.getElementById(id).onsubmit = async (e) => {
+    const form = document.getElementById(id);
+    form.onsubmit = async (e) => {
         e.preventDefault();
         const body = { action, name: e.target[0]?.value, email: e.target[action === 'register' ? 1 : 0].value, password: e.target[action === 'register' ? 2 : 1]?.value };
         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(body) });
         const data = await res.json();
         if (action === 'login' && data.result === 'success') window.location.href = REDIRECT_URL;
-        else if (data.result === 'success' || data.result === 'sent') alert(action === 'forgot' ? 'Temp password sent!' : 'Success!'), authModal.classList.remove('slide', 'reset-mode');
-        else alert('Error: ' + data.result);
+        else if (data.result === 'success' || data.result === 'sent') {
+            alert(action === 'forgot' ? 'Temp password sent!' : 'Success!');
+            form.reset(); authModal.classList.remove('show', 'slide', 'reset-mode');
+        } else alert('Error: ' + data.result);
     };
 };
 
