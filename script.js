@@ -8,17 +8,17 @@ const avatarCircle = document.querySelector('.avatar-circle');
 const alertBox = document.querySelector('.alert-box');
 
 registerLink.addEventListener('click', (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent page jump on toggle
     authModal.classList.add('slide');
 });
 
 loginLink.addEventListener('click', (e) => {
-    e.preventDefault(); 
+    e.preventDefault(); // Switch back to login view
     authModal.classList.remove('slide');
 });
 
 loginBtnModal.addEventListener('click', () => {
-    authModal.classList.add('show');
+    authModal.classList.add('show'); // Launch glass modal
 });
 
 closeBtnModal.addEventListener('click', () => {
@@ -26,7 +26,7 @@ closeBtnModal.addEventListener('click', () => {
 });
 
 avatarCircle.addEventListener('click', (e) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Avoid bubble-up to window
     profileBox.classList.toggle('show');
 });
 
@@ -34,12 +34,15 @@ if (alertBox) {
     setTimeout(() => { alertBox.classList.add('show'); }, 500);
     setTimeout(() => {
         alertBox.classList.remove('show');
-        setTimeout(() => { alertBox.remove(); }, 1000);
+        setTimeout(() => { alertBox.remove(); }, 1000); // Cleanup DOM
     }, 6000);
 }
 
 window.addEventListener('click', (e) => {
     if (profileBox && !profileBox.contains(e.target)) {
-        profileBox.classList.remove('show');
+        profileBox.classList.remove('show'); // Auto-hide menu
+    }
+    if (e.target === authModal) {
+        authModal.classList.remove('show', 'slide'); // Auto-close modal
     }
 });
