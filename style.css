@@ -18,7 +18,7 @@ header {
     align-items: center;
     z-index: 99; 
     backdrop-filter: blur(20px);
-    background: rgba(255, 255, 255, 0.1); /* Added slight tint for header visibility */
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .logo {
@@ -29,12 +29,29 @@ header {
     margin-right: auto; 
 }
 
+nav { display: flex; align-items: center; }
+
 nav a {
     color: #fff;
     text-decoration: none;
     font-weight: 500;
     margin-right: 40px; 
 }
+
+/* NEW: Courses Dropdown Logic */
+.courses-dropdown { position: relative; display: inline-block; }
+.dropdown-menu {
+    position: absolute;
+    display: none;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    min-width: 120px;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+.dropdown-menu a { color: #222; margin: 10px; display: block; }
+.courses-dropdown:hover .dropdown-menu { display: block; }
 
 .user-auth {
     margin-right: 40px; 
@@ -62,9 +79,11 @@ nav a {
 
 section {
     min-height: 100vh;
-    background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.1)), url('Images/hero-bg.jpg') no-repeat;
+    /* Increased brightness: removed dark linear-gradient, added brightness filter */
+    background: url('Images/hero-bg.jpg') no-repeat;
     background-size: cover;
     background-position: center;
+    backdrop-filter: brightness(1.2); 
     padding: 0 100px;
     display: flex;
     align-items: center;
@@ -72,7 +91,7 @@ section {
 
 section h1 {
     position: absolute;
-    bottom: 40px; /* Fixed: was 'botton' */
+    bottom: 40px;
     font-size: 25px;
     color: #fff;
     font-weight: 600;
@@ -110,10 +129,9 @@ section h1 {
 .auth-modal .form-box {
     width: 100%;
     padding: 40px;
-    transition: transform .18s ease; /* Ensure transition is on the base class */
+    transition: transform .18s ease;
 }
 
-/* Login/Register Slide Logic */
 .auth-modal .form-box.login {
     transform: translateX(0);
 }
@@ -133,7 +151,7 @@ section h1 {
 
 .form-box h2 {
     font-size: 35px;
-    text-align: center; /* Fixed: was 'text-aling' */
+    text-align: center;
 }
 
 .input-box {
@@ -234,7 +252,7 @@ section h1 {
 
 .profile-box .dropdown {
     position: absolute;
-    top: 50px; /* Adjusted to be closer to avatar */
+    top: 50px;
     right: 0;
     width: 150px;
     padding: 10px;
@@ -242,7 +260,7 @@ section h1 {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    transform: translateY(20px); /* Fixed: was 'transfomr' */
+    transform: translateY(20px);
     opacity: 0;
     pointer-events: none;
     transition: .5s;
@@ -260,7 +278,7 @@ section h1 {
     position: fixed; 
     top: 35px;
     left: 50%;
-    transform: translateX(-50%) translateY(-150%); /* Fixed: was 'tranform' */
+    transform: translateX(-50%) translateY(-150%);
     width: 350px; 
     height: 70px;
     background: #fff; 
@@ -288,7 +306,7 @@ section h1 {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 100%; /* Fixed: missing semicolon */
+    width: 100%;
     height: 5px;
     background: #0abf30;
 }
