@@ -33,15 +33,15 @@ document.addEventListener('click', (e) => {
         location.reload();
     }
 
-    if (e.target.classList.contains('nav-link') || e.target.classList.contains('logo')) {
-        const p = e.target.dataset.page || 'Home';
+    if (e.target.classList.contains('nav-link') || e.target.classList.contains('logo') || e.target.closest('.logo')) {
+        const p = e.target.dataset.page || e.target.closest('.logo')?.dataset.page || 'Home';
         const hero = document.querySelector('.hero');
         hero.innerHTML = `<h1>${p === 'Home' ? 'Hey Buddy!' : p}</h1>`;
         
         if (p !== 'Home') {
             const d = document.createElement('div');
             d.className = 'hero-desc';
-            d.innerHTML = contentMap[p] || "Content coming soon!"; 
+            d.innerHTML = contentMap[p] || ""; 
             hero.appendChild(d);
         }
         clearInterval(testTimer);
@@ -127,14 +127,18 @@ window.loadTests = (lvl) => {
 
 window.startTest = async (lvl, n) => {
     try {
-        // Constructing path safely for GitHub Pages root
         const fileName = `${lvl.toLowerCase()}.json`; 
         const r = await fetch(`./${fileName}`); 
         
-        if (!r.ok) throw new Error(`Could not find ${fileName}`);
+        if (!r.ok) throw new Error(`File ${fileName} not found on server.`);
         
         const d = await r.json();
         const q = d[`Test${n}`];
+
+        // FIXED: Check if the test data actually exists in the JSON
+        if (!q || !Array.isArray(q)) {
+            throw new Error(`Data for Test ${n} is missing or invalid in ${fileName}.`);
+        }
 
         const hero = document.querySelector('.hero');
         hero.innerHTML = `
@@ -172,15 +176,22 @@ window.startTest = async (lvl, n) => {
             }
         } else {
             q.forEach((x, i) => {
-                f.innerHTML += `
-                    <div style="margin:15px 0; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:10px; color:#fff;">
-                        <span>${i + 1}. ${x.question}</span>
-                        <input type="text" id="q${i}" autocomplete="off" style="width:80px; height:35px; border-radius:5px; border:none; text-align:center; font-weight:bold; color:#222;">
-                    </div>`;
+                const div = document.createElement('div');
+                div.style = "margin:15px 0; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:10px; color:#fff;";
+                div.innerHTML = `
+                    <span>${i + 1}. ${x.question}</span>
+                    <input type="text" id="q${i}" autocomplete="off" style="width:80px; height:35px; border-radius:5px; border:none; text-align:center; font-weight:bold; color:#222;">
+                `;
+                f.appendChild(div);
             });
         }
 
-        f.innerHTML += `<button type="submit" class="btn" style="margin-top:30px; background:#f39c12; color:#fff;">Submit Test</button>`;
+        const subBtn = document.createElement('button');
+        subBtn.type = "submit";
+        subBtn.className = "btn";
+        subBtn.style = "margin-top:30px; background:#f39c12; color:#fff;";
+        subBtn.innerText = "Submit Test";
+        f.appendChild(subBtn);
 
         f.onsubmit = async (e) => {
             e.preventDefault();
@@ -196,8 +207,7 @@ window.startTest = async (lvl, n) => {
                     let sCorrect = 0;
                     for (let i = 0; i < 3; i++) {
                         let idx = (s * 3) + i;
-                        let inputElem = document.getElementById(`q${idx}`);
-                        let val = inputElem ? inputElem.value.trim() : "";
+                        let val = document.getElementById(`q${idx}`).value.trim();
                         let isCorrect = (val == q[idx].answer);
                         if (isCorrect) sCorrect++;
                         resultData[`Q${idx + 1}`] = val === "" ? "-" : (isCorrect ? "1" : "0");
@@ -206,8 +216,7 @@ window.startTest = async (lvl, n) => {
                 }
             } else {
                 q.forEach((x, i) => {
-                    let inputElem = document.getElementById(`q${i}`);
-                    let val = inputElem ? inputElem.value.trim() : "";
+                    let val = document.getElementById(`q${i}`).value.trim();
                     let isCorrect = (val == x.answer);
                     if (isCorrect) score++;
                     resultData[`Q${i + 1}`] = val === "" ? "-" : (isCorrect ? "1" : "0");
@@ -224,7 +233,7 @@ window.startTest = async (lvl, n) => {
             } catch (err) { alert("Submission failed. Check internet."); }
         };
     } catch (err) { 
-        alert(`Error: ${err.message}. Ensure ${lvl.toLowerCase()}.json is in your GitHub main folder.`); 
+        alert(`Error: ${err.message}`); 
     }
 };
 
