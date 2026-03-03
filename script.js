@@ -127,12 +127,11 @@ window.loadTests = (lvl) => {
 
 window.startTest = async (lvl, n) => {
     try {
-        // FIX: Constructing absolute path for GitHub Pages to find JSON files
-        const baseUrl = window.location.href.split('#')[0].split('?')[0];
-        const baseDir = baseUrl.substring(0, baseUrl.lastIndexOf('/'));
+        // FIXED FETCH LOGIC:
+        // We use a relative path directly. GitHub Pages serves files from the repo root.
         const fileName = `${lvl.toLowerCase()}.json`; 
+        const r = await fetch(fileName); // Just call the file name directly
         
-        const r = await fetch(`${baseDir}/${fileName}`);
         if (!r.ok) throw new Error(`Could not find ${fileName}`);
         
         const d = await r.json();
@@ -151,10 +150,9 @@ window.startTest = async (lvl, n) => {
         `;
 
         const f = document.getElementById('testForm');
-        startCountdown(600); // 10 minutes
+        startCountdown(600); 
 
         if (lvl === 'Expert') {
-            // Group 120 questions into 40 sections
             for (let i = 0; i < 40; i++) {
                 const card = document.createElement('div');
                 card.className = 'question-card';
@@ -162,7 +160,7 @@ window.startTest = async (lvl, n) => {
                 for (let j = 0; j < 3; j++) {
                     let idx = (i * 3) + j;
                     if (q[idx]) {
-                        let label = String.fromCharCode(97 + j); // a, b, c
+                        let label = String.fromCharCode(97 + j); 
                         subHtml += `
                             <div class="sub-question">
                                 <span class="sub-text"><span class="sub-label">(${i+1}.${label})</span> ${q[idx].question}</span>
@@ -174,7 +172,6 @@ window.startTest = async (lvl, n) => {
                 f.appendChild(card);
             }
         } else {
-            // Standard layout for Beginner/Competent
             q.forEach((x, i) => {
                 f.innerHTML += `
                     <div style="margin:15px 0; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:10px; color:#fff;">
@@ -226,8 +223,7 @@ window.startTest = async (lvl, n) => {
             } catch (err) { alert("Submission failed. Check internet."); }
         };
     } catch (err) { 
-        console.error(err);
-        alert("Error loading test. Check if JSON file exists in the repository."); 
+        alert(`Error: ${err.message}. Ensure ${lvl.toLowerCase()}.json is in your GitHub main folder.`); 
     }
 };
 
