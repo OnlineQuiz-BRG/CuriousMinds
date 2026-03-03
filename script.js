@@ -5,7 +5,7 @@ const authModal = document.querySelector('.auth-modal'),
     avatarCircle = document.querySelector('.avatar-circle'),
     API_URL = 'https://script.google.com/macros/s/AKfycbxlb4eUwslxEPAk3DiNLsAHnw-nE87c71P-ClDi9oL7BadWqE0c10y9agLE2rGNnflg/exec';
 
-let testTimer; // Global variable for the countdown
+let testTimer;
 
 const contentMap = {
     Home: "Hey Buddy!",
@@ -44,7 +44,7 @@ document.addEventListener('click', (e) => {
             d.innerHTML = contentMap[p]; 
             hero.appendChild(d);
         }
-        clearInterval(testTimer); // Stop timer if navigating away
+        clearInterval(testTimer);
     }
 
     if (e.target.closest('.register-link')) authModal.classList.add('slide');
@@ -65,8 +65,7 @@ const handleForm = async (id, action) => {
         const b = { 
             action, 
             email: e.target[action === 'register' ? 1 : 0].value, 
-            password: e.target[action === 'register' ? 2 : 1]?.value,
-            name: action === 'register' ? e.target[0].value : ""
+            password: e.target[action === 'register' ? 2 : 1]?.value 
         };
         try {
             const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(b) });
@@ -78,9 +77,9 @@ const handleForm = async (id, action) => {
                     authModal.classList.remove('show');
                     localStorage.setItem('userEmail', b.email);
                     avatarCircle.innerText = b.email.charAt(0).toUpperCase();
-                } else alert("Action Successful!");
+                } else alert("Action successful!");
             } else alert(d.result);
-        } catch (err) { alert("Auth Error: Check connection."); }
+        } catch (err) { alert("Auth failed. Check API_URL."); }
     };
 };
 ['loginForm', 'regForm', 'forgotForm'].forEach(id => handleForm(id, id.replace('Form', '').replace('reg', 'register')));
@@ -93,11 +92,10 @@ function startCountdown(seconds) {
     testTimer = setInterval(() => {
         const mins = Math.floor(timeLeft / 60);
         const secs = timeLeft % 60;
-        timerDisplay.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        if (timerDisplay) timerDisplay.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         if (timeLeft <= 0) {
             clearInterval(testTimer);
             document.getElementById('testForm').dispatchEvent(new Event('submit'));
-            alert("Time is up! Test submitted automatically.");
         }
         timeLeft--;
     }, 1000);
@@ -129,18 +127,20 @@ window.loadTests = (lvl) => {
 
 window.startTest = async (lvl, n) => {
     try {
-        // Use full URL path to avoid "Error loading" on GitHub Pages
-        const path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+        // FIX: Constructing absolute path for GitHub Pages to find JSON files
+        const baseUrl = window.location.href.split('#')[0].split('?')[0];
+        const baseDir = baseUrl.substring(0, baseUrl.lastIndexOf('/'));
         const fileName = `${lvl.toLowerCase()}.json`; 
-        const r = await fetch(`${path}/${fileName}`);
         
-        if (!r.ok) throw new Error("File not found");
+        const r = await fetch(`${baseDir}/${fileName}`);
+        if (!r.ok) throw new Error(`Could not find ${fileName}`);
+        
         const d = await r.json();
         const q = d[`Test${n}`];
 
         const hero = document.querySelector('.hero');
         hero.innerHTML = `
-            <div style="display:flex; justify-content:space-between; width:100%; max-width:800px; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; width:100%; max-width:800px; margin: 0 auto 20px;">
                 <button class="back-btn" onclick="loadTests('${lvl}')">← Back</button>
                 <div id="timer" style="color:#f39c12; font-size:24px; font-weight:700;">10:00</div>
             </div>
@@ -151,9 +151,10 @@ window.startTest = async (lvl, n) => {
         `;
 
         const f = document.getElementById('testForm');
-        startCountdown(600); // 10 Minutes
+        startCountdown(600); // 10 minutes
 
         if (lvl === 'Expert') {
+            // Group 120 questions into 40 sections
             for (let i = 0; i < 40; i++) {
                 const card = document.createElement('div');
                 card.className = 'question-card';
@@ -161,7 +162,7 @@ window.startTest = async (lvl, n) => {
                 for (let j = 0; j < 3; j++) {
                     let idx = (i * 3) + j;
                     if (q[idx]) {
-                        let label = String.fromCharCode(97 + j);
+                        let label = String.fromCharCode(97 + j); // a, b, c
                         subHtml += `
                             <div class="sub-question">
                                 <span class="sub-text"><span class="sub-label">(${i+1}.${label})</span> ${q[idx].question}</span>
@@ -173,11 +174,12 @@ window.startTest = async (lvl, n) => {
                 f.appendChild(card);
             }
         } else {
+            // Standard layout for Beginner/Competent
             q.forEach((x, i) => {
                 f.innerHTML += `
                     <div style="margin:15px 0; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:10px; color:#fff;">
                         <span>${i + 1}. ${x.question}</span>
-                        <input type="text" id="q${i}" autocomplete="off" style="width:70px; border-radius:5px; border:none; padding:5px; color:#222; text-align:center; font-weight:bold;">
+                        <input type="text" id="q${i}" autocomplete="off" style="width:80px; height:35px; border-radius:5px; border:none; text-align:center; font-weight:bold; color:#222;">
                     </div>`;
             });
         }
@@ -199,29 +201,34 @@ window.startTest = async (lvl, n) => {
                     for (let i = 0; i < 3; i++) {
                         let idx = (s * 3) + i;
                         let val = document.getElementById(`q${idx}`).value.trim();
-                        let correct = (val == q[idx].answer);
-                        if (correct) sCorrect++;
-                        resultData[`Q${idx + 1}`] = val === "" ? "-" : (correct ? "1" : "0");
+                        let isCorrect = (val == q[idx].answer);
+                        if (isCorrect) sCorrect++;
+                        resultData[`Q${idx + 1}`] = val === "" ? "-" : (isCorrect ? "1" : "0");
                     }
                     if (sCorrect === 3) score++;
                 }
             } else {
                 q.forEach((x, i) => {
                     let val = document.getElementById(`q${i}`).value.trim();
-                    let correct = (val == x.answer);
-                    if (correct) score++;
-                    resultData[`Q${i + 1}`] = val === "" ? "-" : (correct ? "1" : "0");
+                    let isCorrect = (val == x.answer);
+                    if (isCorrect) score++;
+                    resultData[`Q${i + 1}`] = val === "" ? "-" : (isCorrect ? "1" : "0");
                 });
             }
 
             resultData.marks = score;
             resultData.total = (lvl === 'Expert') ? 40 : q.length;
 
-            await fetch(API_URL, { method: 'POST', body: JSON.stringify(resultData) });
-            alert(`Submitted! Marks: ${score}/${resultData.total}`);
-            loadTests(lvl);
+            try {
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify(resultData) });
+                alert(`Submitted! Marks: ${score}/${resultData.total}`);
+                loadTests(lvl);
+            } catch (err) { alert("Submission failed. Check internet."); }
         };
-    } catch (err) { alert("Error loading test. Check if JSON file exists."); }
+    } catch (err) { 
+        console.error(err);
+        alert("Error loading test. Check if JSON file exists in the repository."); 
+    }
 };
 
 window.onclick = (e) => {
