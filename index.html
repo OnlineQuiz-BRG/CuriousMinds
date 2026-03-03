@@ -1,184 +1,111 @@
-const authModal = document.querySelector('.auth-modal'),
-    loginBtnModal = document.querySelector('.login-btn-modal'),
-    closeBtnModal = document.querySelector('.close-btn-modal'),
-    profileBox = document.querySelector('.profile-box'),
-    avatarCircle = document.querySelector('.avatar-circle'),
-    API_URL = 'https://script.google.com/macros/s/AKfycbxlb4eUwslxEPAk3DiNLsAHnw-nE87c71P-ClDi9oL7BadWqE0c10y9agLE2rGNnflg/exec';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curious Minds | Learning Simplified</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-const contentMap = {
-    Home: "Hey Buddy!",
-    About: "Learning simplified.",
-    Maths: `<div class="levels">
-                <div class="lvl-card" onclick="loadTests('Beginner')">Beginner</div>
-                <div class="lvl-card" onclick="loadTests('Competent')">Competent</div>
-                <div class="lvl-card" onclick="loadTests('Expert')">Expert</div>
-            </div>`,
-    Science: "Explore the universe.",
-    Telugu: "Italian of the East.",
-    Resources: "Worksheets.",
-    Contact: "Reach out anytime!"
-};
+    <header>
+        <a href="#" class="logo" data-page="Home">
+            <img src="Images/logo.png" alt="Logo" class="logo-img">
+            Curious Minds
+        </a>
 
-// --- Navigation Logic ---
-document.addEventListener('click', (e) => {
-    if (e.target.id === 'menu-icon') document.querySelector('nav').classList.toggle('active');
-    
-    if (e.target.innerText === 'Logout') {
-        profileBox.style.display = 'none';
-        loginBtnModal.style.display = 'block';
-        profileBox.classList.remove('show');
-        localStorage.clear();
-    }
+        <i class='bx bx-menu' id="menu-icon"></i>
 
-    if (e.target.classList.contains('nav-link') || e.target.classList.contains('logo')) {
-        const p = e.target.dataset.page || 'Home';
-        const hero = document.querySelector('.hero');
+        <nav>
+            <a href="#" class="nav-link" data-page="Home">Home</a>
+            <a href="#" class="nav-link" data-page="About">About</a>
+            <div class="courses-dropdown">
+                <a href="#" class="nav-link" data-page="Maths">Maths <i class='bx bxs-chevron-down'></i></a>
+                <div class="dropdown-menu">
+                    <a href="#" onclick="loadTests('Beginner')">Beginner</a>
+                    <a href="#" onclick="loadTests('Competent')">Competent</a>
+                    <a href="#" onclick="loadTests('Expert')">Expert</a>
+                </div>
+            </div>
+            <a href="#" class="nav-link" data-page="Science">Science</a>
+            <a href="#" class="nav-link" data-page="Resources">Resources</a>
+            <a href="#" class="nav-link" data-page="Contact">Contact</a>
+        </nav>
+
+        <div class="user-auth">
+            <button class="login-btn-modal">Login</button>
+            
+            <div class="profile-box">
+                <div class="avatar-circle">U</div>
+                <div class="dropdown">
+                    <button id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1 id="hero-text">Hey Buddy!</h1>
+    </section>
+
+    <div class="auth-modal">
+        <span class="close-btn-modal"><i class='bx bx-x'></i></span>
         
-        hero.innerHTML = `<h1 id="hero-text">${p === 'Home' ? 'Hey Buddy!' : p}</h1>`;
-        
-        if (p !== 'Home') {
-            const d = document.createElement('div');
-            d.className = 'hero-desc';
-            d.innerHTML = contentMap[p]; 
-            hero.appendChild(d);
-        }
-    }
+        <div class="form-box login">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="input-box">
+                    <input type="email" placeholder="Email" required>
+                    <i class='bx bxs-envelope'></i>
+                </div>
+                <div class="input-box">
+                    <input type="password" placeholder="Password" required>
+                    <i class='bx bxs-lock-alt'></i>
+                </div>
+                <div class="remember-forgot">
+                    <label><input type="checkbox"> Remember me</label>
+                    <a class="forgot-link">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn">Login</button>
+                <p>Don't have an account? <a class="register-link">Register</a></p>
+            </form>
+        </div>
 
-    if (e.target.closest('.register-link')) authModal.classList.add('slide');
-    if (e.target.closest('.login-link')) authModal.classList.remove('slide', 'reset-mode');
-    if (e.target.closest('.forgot-link')) authModal.classList.add('reset-mode');
-});
+        <div class="form-box register">
+            <h2>Registration</h2>
+            <form id="regForm">
+                <div class="input-box">
+                    <input type="text" placeholder="Username" required>
+                    <i class='bx bxs-user'></i>
+                </div>
+                <div class="input-box">
+                    <input type="email" placeholder="Email" required>
+                    <i class='bx bxs-envelope'></i>
+                </div>
+                <div class="input-box">
+                    <input type="password" placeholder="Password" required>
+                    <i class='bx bxs-lock-alt'></i>
+                </div>
+                <button type="submit" class="btn">Register</button>
+                <p>Already have an account? <a class="login-link">Login</a></p>
+            </form>
+        </div>
 
-loginBtnModal.onclick = () => authModal.classList.add('show');
-closeBtnModal.onclick = () => authModal.classList.remove('show', 'slide', 'reset-mode');
-avatarCircle.onclick = (e) => { e.stopPropagation(); profileBox.classList.toggle('show'); };
+        <div class="form-box forgot">
+            <h2>Reset Password</h2>
+            <form id="forgotForm">
+                <p style="margin-bottom: 20px;">Enter your email to receive a reset link.</p>
+                <div class="input-box">
+                    <input type="email" placeholder="Email" required>
+                    <i class='bx bxs-envelope'></i>
+                </div>
+                <button type="submit" class="btn">Send Link</button>
+                <p><a class="login-link">Back to Login</a></p>
+            </form>
+        </div>
+    </div>
 
-// --- Auth Handling ---
-const handleForm = async (id, action) => {
-    const f = document.getElementById(id);
-    if (!f) return;
-    f.onsubmit = async (e) => {
-        e.preventDefault();
-        const b = { 
-            action, 
-            email: e.target[action === 'register' ? 1 : 0].value, 
-            password: e.target[action === 'register' ? 2 : 1]?.value 
-        };
-        const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(b) });
-        const d = await r.json();
-        if (action === 'login' && d.result === 'success') {
-            profileBox.style.display = 'flex';
-            loginBtnModal.style.display = 'none';
-            authModal.classList.remove('show');
-            localStorage.setItem('userEmail', b.email);
-            // Update Avatar Initial
-            avatarCircle.innerText = b.email.charAt(0).toUpperCase();
-        } else alert(d.result);
-    };
-};
-['loginForm', 'regForm', 'forgotForm'].forEach(id => handleForm(id, id.replace('Form', '').replace('reg', 'register')));
-
-// --- Maths Tests Logic ---
-window.goBackToMaths = () => {
-    const hero = document.querySelector('.hero');
-    hero.innerHTML = `<h1 id="hero-text">Maths</h1><div class="hero-desc">${contentMap['Maths']}</div>`;
-};
-
-window.loadTests = (lvl) => {
-    const hero = document.querySelector('.hero');
-    hero.innerHTML = `
-        <button class="back-btn" onclick="goBackToMaths()" style="margin-bottom:20px; cursor:pointer; background:none; border:1px solid #fff; color:#fff; padding:5px 15px; border-radius:20px;">← Back</button>
-        <h1>${lvl} Tests</h1>
-        <div class="test-grid"></div>
-    `;
-    const grid = hero.querySelector('.test-grid');
-    for (let i = 1; i <= 50; i++) {
-        const b = document.createElement('button');
-        b.className = 'test-btn';
-        b.innerText = `Test ${i}`;
-        b.onclick = () => startTest(lvl, i);
-        grid.appendChild(b);
-    }
-};
-
-window.startTest = async (lvl, n) => {
-    try {
-        // Matches lowercase names on GitHub: beginner.json, etc.
-        const fileName = `${lvl.toLowerCase()}.json`; 
-        const r = await fetch(`./${fileName}`);
-        if (!r.ok) throw new Error("File not found");
-        const d = await r.json();
-        const q = d[`Test${n}`];
-
-        const hero = document.querySelector('.hero');
-        hero.innerHTML = `
-            <button class="back-btn" onclick="loadTests('${lvl}')" style="margin-bottom:20px; cursor:pointer; background:none; border:1px solid #fff; color:#fff; padding:5px 15px; border-radius:20px;">← Back to Tests</button>
-            <h1>${lvl} - Test ${n}</h1>
-            <form id="testForm" style="color:#fff; text-align:left; max-width:600px; margin:auto; padding-bottom:50px;"></form>
-        `;
-
-        const f = document.getElementById('testForm');
-        q.forEach((x, i) => {
-            if (lvl === 'Expert' && i % 3 === 0) {
-                f.innerHTML += `<div style="border-bottom:1px solid #fff; margin:25px 0 10px; font-weight:bold; color:#f39c12;">Section ${Math.floor(i / 3) + 1}</div>`;
-            }
-            f.innerHTML += `
-                <div style="margin:10px 0; display:flex; justify-content:space-between; align-items:center;">
-                    <span>${i + 1}. ${x.question}</span>
-                    <input type="text" id="q${i}" autocomplete="off" style="width:70px; border-radius:4px; border:none; padding:5px; color:#222;">
-                </div>`;
-        });
-
-        f.innerHTML += `<button type="submit" class="btn" style="margin-top:30px; background:#f39c12; color:#fff;">Submit Test</button>`;
-
-        f.onsubmit = async (e) => {
-            e.preventDefault();
-            const email = localStorage.getItem('userEmail');
-            if (!email) return alert("Please login to submit your test!");
-
-            let score = 0;
-            let resultData = { 
-                action: 'saveResult', 
-                email: email, 
-                level: `Maths_${lvl}`, 
-                testNum: n 
-            };
-
-            if (lvl === 'Expert') {
-                for (let s = 0; s < 40; s++) { 
-                    let sCorrect = 0;
-                    for (let i = 0; i < 3; i++) {
-                        let idx = (s * 3) + i;
-                        let val = document.getElementById(`q${idx}`).value.trim();
-                        let isCorrect = (val == q[idx].answer);
-                        if (isCorrect) sCorrect++;
-                        resultData[`Q${idx + 1}`] = val === "" ? "-" : (isCorrect ? "1" : "0");
-                    }
-                    if (sCorrect === 3) score += 1;
-                }
-            } else {
-                q.forEach((x, i) => {
-                    let val = document.getElementById(`q${i}`).value.trim();
-                    let isCorrect = (val == x.answer);
-                    if (isCorrect) score++;
-                    resultData[`Q${i + 1}`] = val === "" ? "-" : (isCorrect ? "1" : "0");
-                });
-            }
-
-            resultData.marks = score;
-            resultData.total = (lvl === 'Expert') ? 40 : q.length;
-
-            await fetch(API_URL, { method: 'POST', body: JSON.stringify(resultData) });
-            alert(`Test Submitted! Your Score: ${score}/${resultData.total}`);
-            loadTests(lvl);
-        };
-
-    } catch (err) {
-        alert(`Error: Ensure ${lvl.toLowerCase()}.json exists and is formatted correctly.`);
-    }
-};
-
-window.onclick = (e) => {
-    if (profileBox && !profileBox.contains(e.target)) profileBox.classList.remove('show');
-    if (e.target === authModal) authModal.classList.remove('show');
-};
+    <script src="script.js"></script>
+</body>
+</html>
