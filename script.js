@@ -29,8 +29,6 @@ document.addEventListener('click', (e) => {
     if (e.target.classList.contains('nav-link') || e.target.classList.contains('logo')) {
         const p = e.target.dataset.page || 'Home';
         const hero = document.querySelector('.hero');
-        
-        // Update Hero Title and Content
         hero.innerHTML = `<h1 id="hero-text">${p === 'Home' ? 'Hey Buddy!' : p}</h1>`;
         
         if (p !== 'Home') {
@@ -68,20 +66,18 @@ const handleForm = async (id, action) => {
             loginBtnModal.style.display = 'none';
             authModal.classList.remove('show');
             localStorage.setItem('userEmail', b.email);
-            // Update Avatar Initial
             avatarCircle.innerText = b.email.charAt(0).toUpperCase();
         } else alert(d.result);
     };
 };
 ['loginForm', 'regForm', 'forgotForm'].forEach(id => handleForm(id, id.replace('Form', '').replace('reg', 'register')));
 
-// --- Navigation Back-Buttons ---
+// --- Maths Navigation ---
 window.goBackToMaths = () => {
     const hero = document.querySelector('.hero');
     hero.innerHTML = `<h1 id="hero-text">Maths</h1><div class="hero-desc">${contentMap['Maths']}</div>`;
 };
 
-// --- Test Management ---
 window.loadTests = (lvl) => {
     const hero = document.querySelector('.hero');
     hero.innerHTML = `
@@ -99,9 +95,10 @@ window.loadTests = (lvl) => {
     }
 };
 
+// --- Test Evaluation Logic ---
 window.startTest = async (lvl, n) => {
     try {
-        const fileName = `${lvl}.json`; // Matches capitalized Beginner.json, etc.
+        const fileName = `${lvl}.json`; 
         const r = await fetch(`./${fileName}`);
         if (!r.ok) throw new Error("JSON file not found");
         const d = await r.json();
@@ -116,7 +113,6 @@ window.startTest = async (lvl, n) => {
 
         const f = document.getElementById('testForm');
         q.forEach((x, i) => {
-            // Expert Level Section Grouping (40 sections of 3)
             if (lvl === 'Expert' && i % 3 === 0) {
                 f.innerHTML += `<div class="expert-section-header" style="margin:25px 0 10px; font-weight:bold; color:#f39c12;">Section ${Math.floor(i / 3) + 1}</div>`;
             }
@@ -133,7 +129,7 @@ window.startTest = async (lvl, n) => {
             e.preventDefault();
             if (!localStorage.getItem('userEmail')) return alert("Please login to submit your test.");
 
-            let score = 0;
+            let totalScore = 0;
             let resultData = { 
                 action: 'saveResult', 
                 email: localStorage.getItem('userEmail'), 
@@ -142,39 +138,39 @@ window.startTest = async (lvl, n) => {
             };
 
             if (lvl === 'Expert') {
-                // Evaluate 40 sections
-                for (let s = 0; s < 40; s++) {
+                for (let s = 0; s < 40; s++) { // 40 sections
                     let sCorrect = 0;
+                    let sAttempted = 0;
                     for (let i = 0; i < 3; i++) {
                         let idx = (s * 3) + i;
                         let val = document.getElementById(`q${idx}`).value.trim();
+                        if (val !== "") sAttempted++;
                         let isCorrect = (val == q[idx].answer);
                         if (isCorrect) sCorrect++;
                         resultData[`Q${idx + 1}`] = val === "" ? "-" : (isCorrect ? "1" : "0");
                     }
-                    if (sCorrect === 3) score += 1; // 1 mark per section
+                    // Scoring: 1 if all 3 correct, 0 if attempted but wrong, - if none attempted
+                    if (sCorrect === 3) totalScore += 1;
                 }
             } else {
-                // Beginner/Competent Logic
                 q.forEach((x, i) => {
                     let val = document.getElementById(`q${i}`).value.trim();
                     let isCorrect = (val == x.answer);
-                    if (isCorrect) score++;
+                    if (isCorrect) totalScore++;
                     resultData[`Q${i + 1}`] = val === "" ? "-" : (isCorrect ? "1" : "0");
                 });
             }
 
-            resultData.marks = score;
+            resultData.marks = totalScore;
             resultData.total = (lvl === 'Expert') ? 40 : q.length;
 
             await fetch(API_URL, { method: 'POST', body: JSON.stringify(resultData) });
-            alert(`Test Submitted Successfully! Your Score: ${score}/${resultData.total}`);
+            alert(`Test Submitted! Score: ${totalScore}/${resultData.total}`);
             loadTests(lvl);
         };
 
     } catch (err) {
-        console.error(err);
-        alert(`Error loading test. Please ensure ${lvl}.json is available and properly formatted.`);
+        alert(`Error loading test. Ensure ${lvl}.json is in the root directory.`);
     }
 };
 
