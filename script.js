@@ -5,6 +5,8 @@ const authModal = document.querySelector('.auth-modal'),
     avatarCircle = document.querySelector('.avatar-circle'),
     API_URL = 'https://script.google.com/macros/s/AKfycbxlb4eUwslxEPAk3DiNLsAHnw-nE87c71P-ClDi9oL7BadWqE0c10y9agLE2rGNnflg/exec';
 
+let testTimer; // Global variable for the countdown
+
 const contentMap = {
     Home: "Hey Buddy!",
     About: "Learning simplified.",
@@ -28,6 +30,7 @@ document.addEventListener('click', (e) => {
         loginBtnModal.style.display = 'block';
         profileBox.classList.remove('show');
         localStorage.clear();
+        location.reload();
     }
 
     if (e.target.classList.contains('nav-link') || e.target.classList.contains('logo')) {
@@ -41,6 +44,7 @@ document.addEventListener('click', (e) => {
             d.innerHTML = contentMap[p]; 
             hero.appendChild(d);
         }
+        clearInterval(testTimer); // Stop timer if navigating away
     }
 
     if (e.target.closest('.register-link')) authModal.classList.add('slide');
@@ -61,25 +65,47 @@ const handleForm = async (id, action) => {
         const b = { 
             action, 
             email: e.target[action === 'register' ? 1 : 0].value, 
-            password: e.target[action === 'register' ? 2 : 1]?.value 
+            password: e.target[action === 'register' ? 2 : 1]?.value,
+            name: action === 'register' ? e.target[0].value : ""
         };
-        const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(b) });
-        const d = await r.json();
-        if (d.result === 'success') {
-            if (action === 'login') {
-                profileBox.style.display = 'flex';
-                loginBtnModal.style.display = 'none';
-                authModal.classList.remove('show');
-                localStorage.setItem('userEmail', b.email);
-                avatarCircle.innerText = b.email.charAt(0).toUpperCase();
-            } else alert("Success!");
-        } else alert(d.result);
+        try {
+            const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(b) });
+            const d = await r.json();
+            if (d.result === 'success') {
+                if (action === 'login') {
+                    profileBox.style.display = 'flex';
+                    loginBtnModal.style.display = 'none';
+                    authModal.classList.remove('show');
+                    localStorage.setItem('userEmail', b.email);
+                    avatarCircle.innerText = b.email.charAt(0).toUpperCase();
+                } else alert("Action Successful!");
+            } else alert(d.result);
+        } catch (err) { alert("Auth Error: Check connection."); }
     };
 };
 ['loginForm', 'regForm', 'forgotForm'].forEach(id => handleForm(id, id.replace('Form', '').replace('reg', 'register')));
 
+// --- Timer Logic ---
+function startCountdown(seconds) {
+    const timerDisplay = document.getElementById('timer');
+    let timeLeft = seconds;
+    clearInterval(testTimer);
+    testTimer = setInterval(() => {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerDisplay.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        if (timeLeft <= 0) {
+            clearInterval(testTimer);
+            document.getElementById('testForm').dispatchEvent(new Event('submit'));
+            alert("Time is up! Test submitted automatically.");
+        }
+        timeLeft--;
+    }, 1000);
+}
+
 // --- Maths Tests Logic ---
 window.goBackToMaths = () => {
+    clearInterval(testTimer);
     const hero = document.querySelector('.hero');
     hero.innerHTML = `<h1>Maths</h1><div class="hero-desc">${contentMap['Maths']}</div>`;
 };
@@ -103,33 +129,39 @@ window.loadTests = (lvl) => {
 
 window.startTest = async (lvl, n) => {
     try {
+        // Use full URL path to avoid "Error loading" on GitHub Pages
+        const path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
         const fileName = `${lvl.toLowerCase()}.json`; 
-        const r = await fetch(`./${fileName}`);
+        const r = await fetch(`${path}/${fileName}`);
+        
+        if (!r.ok) throw new Error("File not found");
         const d = await r.json();
         const q = d[`Test${n}`];
 
         const hero = document.querySelector('.hero');
         hero.innerHTML = `
-            <button class="back-btn" onclick="loadTests('${lvl}')">← Back to Tests</button>
-            <h1 style="margin-bottom:20px;">${lvl} - Test ${n}</h1>
+            <div style="display:flex; justify-content:space-between; width:100%; max-width:800px; margin-bottom:20px;">
+                <button class="back-btn" onclick="loadTests('${lvl}')">← Back</button>
+                <div id="timer" style="color:#f39c12; font-size:24px; font-weight:700;">10:00</div>
+            </div>
+            <h1 style="margin-bottom:20px; color:#fff;">${lvl} - Test ${n}</h1>
             <div class="${lvl === 'Expert' ? 'expert-container' : ''}">
                 <form id="testForm"></form>
             </div>
         `;
 
         const f = document.getElementById('testForm');
-        
+        startCountdown(600); // 10 Minutes
+
         if (lvl === 'Expert') {
-            // Group into 40 sections (3 questions each)
             for (let i = 0; i < 40; i++) {
                 const card = document.createElement('div');
                 card.className = 'question-card';
                 let subHtml = `<div class="question-header">Question ${i+1}</div>`;
-                
                 for (let j = 0; j < 3; j++) {
                     let idx = (i * 3) + j;
                     if (q[idx]) {
-                        let label = String.fromCharCode(97 + j); // a, b, c
+                        let label = String.fromCharCode(97 + j);
                         subHtml += `
                             <div class="sub-question">
                                 <span class="sub-text"><span class="sub-label">(${i+1}.${label})</span> ${q[idx].question}</span>
@@ -141,7 +173,6 @@ window.startTest = async (lvl, n) => {
                 f.appendChild(card);
             }
         } else {
-            // Standard layout for Competent/Beginner
             q.forEach((x, i) => {
                 f.innerHTML += `
                     <div style="margin:15px 0; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:10px; color:#fff;">
@@ -155,6 +186,7 @@ window.startTest = async (lvl, n) => {
 
         f.onsubmit = async (e) => {
             e.preventDefault();
+            clearInterval(testTimer);
             const email = localStorage.getItem('userEmail');
             if (!email) return alert("Please login first!");
 
@@ -189,7 +221,7 @@ window.startTest = async (lvl, n) => {
             alert(`Submitted! Marks: ${score}/${resultData.total}`);
             loadTests(lvl);
         };
-    } catch (err) { alert("Error loading test."); }
+    } catch (err) { alert("Error loading test. Check if JSON file exists."); }
 };
 
 window.onclick = (e) => {
