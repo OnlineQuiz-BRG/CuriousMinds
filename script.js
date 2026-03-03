@@ -13,7 +13,6 @@ document.addEventListener('click', (e) => {
     }
     if (e.target.closest('.register-link')) authModal.classList.add('slide'); 
     if (e.target.closest('.login-link')) authModal.classList.remove('slide', 'reset-mode');
-    if (e.target.closest('.forgot-link')) authModal.classList.add('reset-mode');
 });
 
 loginBtnModal.onclick = () => authModal.classList.add('show');
@@ -21,7 +20,8 @@ closeBtnModal.onclick = () => authModal.classList.remove('show', 'slide', 'reset
 avatarCircle.onclick = (e) => (e.stopPropagation(), profileBox.classList.toggle('show'));
 
 const handleForm = async (id, action) => {
-    document.getElementById(id).onsubmit = async (e) => {
+    const f = document.getElementById(id); if(!f) return;
+    f.onsubmit = async (e) => {
         e.preventDefault(); 
         const b = { action, email: e.target[action === 'register' ? 1 : 0].value, password: e.target[action === 'register' ? 2 : 1]?.value };
         const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(b) }); 
@@ -40,7 +40,7 @@ window.goBack = () => {
 
 window.loadTests = (lvl) => {
     const h = document.querySelector('.hero');
-    h.innerHTML = `<button class="btn-link" onclick="goBack()" style="margin-bottom:20px; cursor:pointer;">← Back to Levels</button><h1>${lvl} Tests</h1><div class="test-grid"></div>`;
+    h.innerHTML = `<button class="btn-link" onclick="goBack()" style="margin-bottom:20px; cursor:pointer; background:none; border:1px solid #fff; color:#fff; padding:5px 10px; border-radius:5px;">← Back to Levels</button><h1>${lvl} Tests</h1><div class="test-grid"></div>`;
     for (let i = 1; i <= 50; i++) {
         const b = document.createElement('button'); b.className='test-btn'; b.innerText=`Test ${i}`;
         b.onclick=()=>startTest(lvl, i); h.querySelector('.test-grid').appendChild(b);
@@ -49,17 +49,22 @@ window.loadTests = (lvl) => {
 
 window.startTest = async (lvl, n) => {
     try {
-        const r = await fetch(`./${lvl.toLowerCase()}.json`); 
+        // Matches your capitalized filenames: Beginner.json, Competent.json, Expert.json
+        const fileName = `${lvl}.json`; 
+        const r = await fetch(`./${fileName}`); 
+        if (!r.ok) throw new Error(`File not found: ${fileName}`);
         const d = await r.json(); 
         const q = d[`Test${n}`];
         const h = document.querySelector('.hero');
-        h.innerHTML = `<button class="btn-link" onclick="loadTests('${lvl}')" style="margin-bottom:20px; cursor:pointer;">← Back to Tests</button><h1>${lvl} - Test ${n}</h1><form id="tF" style="color:#fff; text-align:left; max-width:600px; margin:auto; padding-bottom:50px;"></form>`;
+        h.innerHTML = `<button class="btn-link" onclick="loadTests('${lvl}')" style="margin-bottom:20px; cursor:pointer; background:none; border:1px solid #fff; color:#fff; padding:5px 10px; border-radius:5px;">← Back to Tests</button><h1>${lvl} - Test ${n}</h1><form id="tF" style="color:#fff; text-align:left; max-width:600px; margin:auto; padding-bottom:50px;"></form>`;
         const f = h.querySelector('#tF');
+        
         q.forEach((x, i) => {
             if (lvl === 'Expert' && i % 3 === 0) f.innerHTML += `<div style="border-bottom:1px solid #fff; margin:25px 0 10px; font-weight:bold; color:#f39c12;">Section ${Math.floor(i/3)+1}</div>`;
             f.innerHTML += `<div style="margin:8px 0; display:flex; justify-content:space-between; align-items:center;"><span>${i+1}. ${x.question}</span> <input type="text" id="q${i}" style="width:70px; border-radius:4px; border:none; padding:4px; color:#222;"></div>`;
         });
-        f.innerHTML += `<button type="submit" class="btn" style="margin-top:30px; background:#f39c12; color:#fff;">Submit Test</button>`;
+        
+        f.innerHTML += `<button type="submit" class="btn" style="margin-top:30px; background:#f39c12; color:#fff; cursor:pointer;">Submit Test</button>`;
         f.onsubmit = async (e) => {
             e.preventDefault();
             let score = 0, res = { action: 'saveResult', email: localStorage.getItem('userEmail'), level: `Maths_${lvl}`, testNum: n };
@@ -84,7 +89,10 @@ window.startTest = async (lvl, n) => {
             await fetch(API_URL, { method: 'POST', body: JSON.stringify(res) });
             alert(`Test Submitted! Score: ${score}/${res.total}`); loadTests(lvl);
         };
-    } catch (err) { alert("Error: Could not load questions. Check your JSON file naming."); }
+    } catch (err) { 
+        console.error(err);
+        alert(`Error: Could not load questions. Ensure ${lvl}.json exists in your repository main folder.`); 
+    }
 };
 
 window.onclick = (e) => { if (profileBox && !profileBox.contains(e.target)) profileBox.classList.remove('show'); if (e.target === authModal) authModal.classList.remove('show'); };
