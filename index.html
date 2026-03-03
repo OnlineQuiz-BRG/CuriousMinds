@@ -8,7 +8,11 @@ const authModal = document.querySelector('.auth-modal'),
 const contentMap = {
     Home: "Hey Buddy!",
     About: "Learning simplified.",
-    Maths: '<div class="levels"><div class="lvl-card" onclick="loadTests(\'Beginner\')">Beginner</div><div class="lvl-card" onclick="loadTests(\'Competent\')">Competent</div><div class="lvl-card" onclick="loadTests(\'Expert\')">Expert</div></div>',
+    Maths: `<div class="levels">
+                <div class="lvl-card" onclick="loadTests('Beginner')">Beginner</div>
+                <div class="lvl-card" onclick="loadTests('Competent')">Competent</div>
+                <div class="lvl-card" onclick="loadTests('Expert')">Expert</div>
+            </div>`,
     Science: "Explore the universe.",
     Telugu: "Italian of the East.",
     Resources: "Worksheets.",
@@ -30,13 +34,12 @@ document.addEventListener('click', (e) => {
         const p = e.target.dataset.page || 'Home';
         const hero = document.querySelector('.hero');
         
-        // Reset Hero Section
         hero.innerHTML = `<h1 id="hero-text">${p === 'Home' ? 'Hey Buddy!' : p}</h1>`;
         
         if (p !== 'Home') {
             const d = document.createElement('div');
             d.className = 'hero-desc';
-            d.innerHTML = contentMap[p]; // Use innerHTML to render the frames
+            d.innerHTML = contentMap[p]; 
             hero.appendChild(d);
         }
     }
@@ -68,6 +71,8 @@ const handleForm = async (id, action) => {
             loginBtnModal.style.display = 'none';
             authModal.classList.remove('show');
             localStorage.setItem('userEmail', b.email);
+            // Update Avatar Initial
+            avatarCircle.innerText = b.email.charAt(0).toUpperCase();
         } else alert(d.result);
     };
 };
@@ -98,7 +103,8 @@ window.loadTests = (lvl) => {
 
 window.startTest = async (lvl, n) => {
     try {
-        const fileName = `${lvl}.json`; // Matches capitalized names: Beginner.json, etc.
+        // Matches lowercase names on GitHub: beginner.json, etc.
+        const fileName = `${lvl.toLowerCase()}.json`; 
         const r = await fetch(`./${fileName}`);
         if (!r.ok) throw new Error("File not found");
         const d = await r.json();
@@ -119,7 +125,7 @@ window.startTest = async (lvl, n) => {
             f.innerHTML += `
                 <div style="margin:10px 0; display:flex; justify-content:space-between; align-items:center;">
                     <span>${i + 1}. ${x.question}</span>
-                    <input type="text" id="q${i}" style="width:70px; border-radius:4px; border:none; padding:5px; color:#222;">
+                    <input type="text" id="q${i}" autocomplete="off" style="width:70px; border-radius:4px; border:none; padding:5px; color:#222;">
                 </div>`;
         });
 
@@ -127,16 +133,19 @@ window.startTest = async (lvl, n) => {
 
         f.onsubmit = async (e) => {
             e.preventDefault();
+            const email = localStorage.getItem('userEmail');
+            if (!email) return alert("Please login to submit your test!");
+
             let score = 0;
             let resultData = { 
                 action: 'saveResult', 
-                email: localStorage.getItem('userEmail'), 
+                email: email, 
                 level: `Maths_${lvl}`, 
                 testNum: n 
             };
 
             if (lvl === 'Expert') {
-                for (let s = 0; s < 40; s++) { // 40 sections
+                for (let s = 0; s < 40; s++) { 
                     let sCorrect = 0;
                     for (let i = 0; i < 3; i++) {
                         let idx = (s * 3) + i;
@@ -165,7 +174,7 @@ window.startTest = async (lvl, n) => {
         };
 
     } catch (err) {
-        alert(`Error: Ensure ${lvl}.json exists and is formatted correctly.`);
+        alert(`Error: Ensure ${lvl.toLowerCase()}.json exists and is formatted correctly.`);
     }
 };
 
