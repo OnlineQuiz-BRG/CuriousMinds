@@ -87,3 +87,50 @@ section h1 { font-size: 50px; color: #fff; font-weight: 700; text-shadow: 0 5px 
     nav a { margin: 15px 0; } 
     .auth-modal { width: 90%; }
 }
+/* Add this to your existing style.css */
+.expert-container { width: 100%; max-width: 800px; margin: 20px auto; text-align: left; }
+
+.question-card { 
+    background: #fff; 
+    border-radius: 8px; 
+    margin-bottom: 25px; 
+    overflow: hidden; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+    border: 1px solid #ddd;
+}
+
+.question-header { 
+    background: #1a237e; /* Dark Blue from your reference */
+    color: #fff; 
+    padding: 12px 20px; 
+    font-weight: 600; 
+    font-size: 1.1rem; 
+}
+
+.sub-question { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 15px 25px; 
+    border-bottom: 1px solid #eee; 
+    background: #fff; 
+}
+
+.sub-question:last-child { border-bottom: none; }
+
+.sub-text { color: #333; font-size: 1rem; font-weight: 500; flex-grow: 1; }
+
+.sub-label { color: #1a237e; font-weight: 800; margin-right: 12px; }
+
+.expert-input { 
+    width: 110px; 
+    height: 40px; 
+    border: 2px solid #ccc; 
+    border-radius: 6px; 
+    text-align: center; 
+    font-weight: 700; 
+    font-size: 1.1rem;
+    background: #feffeb; /* Light yellowish tint from reference */
+}
+
+.expert-input:focus { border-color: #f39c12; outline: none; box-shadow: 0 0 5px rgba(243,156,18,0.5); }
