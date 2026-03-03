@@ -8,18 +8,23 @@ const authModal = document.querySelector('.auth-modal'),
 const contentMap = {
     Home: "Hey Buddy!",
     About: "Learning simplified.",
-    Maths: '<div class="levels"><div class="lvl-card" onclick="loadTests(\'Beginner\')">Beginner</div><div class="lvl-card" onclick="loadTests(\'Competent\')">Competent</div><div class="lvl-card" onclick="loadTests(\'Expert\')">Expert</div></div>',
+    Maths: `<div class="levels">
+                <div class="lvl-card" onclick="loadTests('Beginner')">Beginner</div>
+                <div class="lvl-card" onclick="loadTests('Competent')">Competent</div>
+                <div class="lvl-card" onclick="loadTests('Expert')">Expert</div>
+            </div>`,
     Science: "Explore the universe.",
     Telugu: "Italian of the East.",
     Resources: "Worksheets.",
     Contact: "Reach out anytime!"
 };
 
-// --- Navigation & Core UI ---
+// --- Navigation & Global Click Logic ---
 document.addEventListener('click', (e) => {
     if (e.target.id === 'menu-icon') document.querySelector('nav').classList.toggle('active');
     
-    if (e.target.innerText === 'Logout') {
+    // Improved Logout Logic
+    if (e.target.id === 'logout-btn' || e.target.innerText === 'Logout') {
         profileBox.style.display = 'none';
         loginBtnModal.style.display = 'block';
         profileBox.classList.remove('show');
@@ -29,6 +34,7 @@ document.addEventListener('click', (e) => {
     if (e.target.classList.contains('nav-link') || e.target.classList.contains('logo')) {
         const p = e.target.dataset.page || 'Home';
         const hero = document.querySelector('.hero');
+        
         hero.innerHTML = `<h1 id="hero-text">${p === 'Home' ? 'Hey Buddy!' : p}</h1>`;
         
         if (p !== 'Home') {
@@ -59,20 +65,26 @@ const handleForm = async (id, action) => {
             email: e.target[action === 'register' ? 1 : 0].value, 
             password: e.target[action === 'register' ? 2 : 1]?.value 
         };
-        const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(b) });
-        const d = await r.json();
-        if (action === 'login' && d.result === 'success') {
-            profileBox.style.display = 'flex';
-            loginBtnModal.style.display = 'none';
-            authModal.classList.remove('show');
-            localStorage.setItem('userEmail', b.email);
-            avatarCircle.innerText = b.email.charAt(0).toUpperCase();
-        } else alert(d.result);
+        try {
+            const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(b) });
+            const d = await r.json();
+            if (action === 'login' && d.result === 'success') {
+                profileBox.style.display = 'flex';
+                loginBtnModal.style.display = 'none';
+                authModal.classList.remove('show');
+                localStorage.setItem('userEmail', b.email);
+                avatarCircle.innerText = b.email.charAt(0).toUpperCase();
+            } else {
+                alert(d.result);
+            }
+        } catch (err) {
+            alert("Connection error. Please check your API URL.");
+        }
     };
 };
 ['loginForm', 'regForm', 'forgotForm'].forEach(id => handleForm(id, id.replace('Form', '').replace('reg', 'register')));
 
-// --- Maths Navigation ---
+// --- Maths Tests Logic ---
 window.goBackToMaths = () => {
     const hero = document.querySelector('.hero');
     hero.innerHTML = `<h1 id="hero-text">Maths</h1><div class="hero-desc">${contentMap['Maths']}</div>`;
@@ -81,7 +93,7 @@ window.goBackToMaths = () => {
 window.loadTests = (lvl) => {
     const hero = document.querySelector('.hero');
     hero.innerHTML = `
-        <button class="back-btn" onclick="goBackToMaths()" style="margin-bottom:20px; cursor:pointer; background:none; border:1px solid #fff; color:#fff; padding:5px 15px; border-radius:20px;">← Back to Levels</button>
+        <button class="back-btn" onclick="goBackToMaths()" style="margin-bottom:20px; cursor:pointer; background:none; border:1px solid #fff; color:#fff; padding:5px 15px; border-radius:20px;">← Back</button>
         <h1>${lvl} Tests</h1>
         <div class="test-grid"></div>
     `;
@@ -95,82 +107,79 @@ window.loadTests = (lvl) => {
     }
 };
 
-// --- Test Evaluation Logic ---
 window.startTest = async (lvl, n) => {
     try {
-        const fileName = `${lvl}.json`; 
+        const fileName = `${lvl.toLowerCase()}.json`; 
         const r = await fetch(`./${fileName}`);
-        if (!r.ok) throw new Error("JSON file not found");
+        if (!r.ok) throw new Error("File not found");
         const d = await r.json();
         const q = d[`Test${n}`];
 
         const hero = document.querySelector('.hero');
         hero.innerHTML = `
             <button class="back-btn" onclick="loadTests('${lvl}')" style="margin-bottom:20px; cursor:pointer; background:none; border:1px solid #fff; color:#fff; padding:5px 15px; border-radius:20px;">← Back to Tests</button>
-            <h1 style="font-size: 40px;">${lvl} - Test ${n}</h1>
-            <form id="testForm" style="color:#fff; text-align:left; max-width:600px; margin:20px auto; padding-bottom:100px;"></form>
+            <h1>${lvl} - Test ${n}</h1>
+            <form id="testForm" style="color:#fff; text-align:left; max-width:600px; margin:auto; padding-bottom:50px;"></form>
         `;
 
         const f = document.getElementById('testForm');
         q.forEach((x, i) => {
             if (lvl === 'Expert' && i % 3 === 0) {
-                f.innerHTML += `<div class="expert-section-header" style="margin:25px 0 10px; font-weight:bold; color:#f39c12;">Section ${Math.floor(i / 3) + 1}</div>`;
+                f.innerHTML += `<div class="expert-section-header">Section ${Math.floor(i / 3) + 1}</div>`;
             }
             f.innerHTML += `
                 <div style="margin:10px 0; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size: 16px;">${i + 1}. ${x.question}</span>
-                    <input type="text" id="q${i}" autocomplete="off" style="width:70px; border-radius:4px; border:none; padding:5px; color:#222; text-align:center;">
+                    <span>${i + 1}. ${x.question}</span>
+                    <input type="text" id="q${i}" autocomplete="off">
                 </div>`;
         });
 
-        f.innerHTML += `<button type="submit" class="btn" style="margin-top:40px;">Submit Test</button>`;
+        f.innerHTML += `<button type="submit" class="btn" style="margin-top:30px; background:#f39c12; color:#fff;">Submit Test</button>`;
 
         f.onsubmit = async (e) => {
             e.preventDefault();
-            if (!localStorage.getItem('userEmail')) return alert("Please login to submit your test.");
+            const email = localStorage.getItem('userEmail');
+            if (!email) return alert("Please login to submit your test!");
 
-            let totalScore = 0;
+            let score = 0;
             let resultData = { 
                 action: 'saveResult', 
-                email: localStorage.getItem('userEmail'), 
+                email: email, 
                 level: `Maths_${lvl}`, 
                 testNum: n 
             };
 
             if (lvl === 'Expert') {
-                for (let s = 0; s < 40; s++) { // 40 sections
+                for (let s = 0; s < 40; s++) { 
                     let sCorrect = 0;
-                    let sAttempted = 0;
                     for (let i = 0; i < 3; i++) {
                         let idx = (s * 3) + i;
                         let val = document.getElementById(`q${idx}`).value.trim();
-                        if (val !== "") sAttempted++;
                         let isCorrect = (val == q[idx].answer);
                         if (isCorrect) sCorrect++;
                         resultData[`Q${idx + 1}`] = val === "" ? "-" : (isCorrect ? "1" : "0");
                     }
-                    // Scoring: 1 if all 3 correct, 0 if attempted but wrong, - if none attempted
-                    if (sCorrect === 3) totalScore += 1;
+                    if (sCorrect === 3) score += 1;
                 }
             } else {
                 q.forEach((x, i) => {
                     let val = document.getElementById(`q${i}`).value.trim();
                     let isCorrect = (val == x.answer);
-                    if (isCorrect) totalScore++;
+                    if (isCorrect) score++;
                     resultData[`Q${i + 1}`] = val === "" ? "-" : (isCorrect ? "1" : "0");
                 });
             }
 
-            resultData.marks = totalScore;
+            resultData.marks = score;
             resultData.total = (lvl === 'Expert') ? 40 : q.length;
 
             await fetch(API_URL, { method: 'POST', body: JSON.stringify(resultData) });
-            alert(`Test Submitted! Score: ${totalScore}/${resultData.total}`);
+            alert(`Test Submitted! Your Score: ${score}/${resultData.total}`);
             loadTests(lvl);
         };
 
     } catch (err) {
-        alert(`Error loading test. Ensure ${lvl}.json is in the root directory.`);
+        alert(`Error: Ensure ${lvl.toLowerCase()}.json exists and is formatted correctly.`);
     }
 };
 
