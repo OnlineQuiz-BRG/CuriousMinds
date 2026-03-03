@@ -41,7 +41,7 @@ document.addEventListener('click', (e) => {
         if (p !== 'Home') {
             const d = document.createElement('div');
             d.className = 'hero-desc';
-            d.innerHTML = contentMap[p]; 
+            d.innerHTML = contentMap[p] || "Content coming soon!"; 
             hero.appendChild(d);
         }
         clearInterval(testTimer);
@@ -127,10 +127,9 @@ window.loadTests = (lvl) => {
 
 window.startTest = async (lvl, n) => {
     try {
-        // FIXED FETCH LOGIC:
-        // We use a relative path directly. GitHub Pages serves files from the repo root.
+        // Constructing path safely for GitHub Pages root
         const fileName = `${lvl.toLowerCase()}.json`; 
-        const r = await fetch(fileName); // Just call the file name directly
+        const r = await fetch(`./${fileName}`); 
         
         if (!r.ok) throw new Error(`Could not find ${fileName}`);
         
@@ -197,7 +196,8 @@ window.startTest = async (lvl, n) => {
                     let sCorrect = 0;
                     for (let i = 0; i < 3; i++) {
                         let idx = (s * 3) + i;
-                        let val = document.getElementById(`q${idx}`).value.trim();
+                        let inputElem = document.getElementById(`q${idx}`);
+                        let val = inputElem ? inputElem.value.trim() : "";
                         let isCorrect = (val == q[idx].answer);
                         if (isCorrect) sCorrect++;
                         resultData[`Q${idx + 1}`] = val === "" ? "-" : (isCorrect ? "1" : "0");
@@ -206,7 +206,8 @@ window.startTest = async (lvl, n) => {
                 }
             } else {
                 q.forEach((x, i) => {
-                    let val = document.getElementById(`q${i}`).value.trim();
+                    let inputElem = document.getElementById(`q${i}`);
+                    let val = inputElem ? inputElem.value.trim() : "";
                     let isCorrect = (val == x.answer);
                     if (isCorrect) score++;
                     resultData[`Q${i + 1}`] = val === "" ? "-" : (isCorrect ? "1" : "0");
